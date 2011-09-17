@@ -1,43 +1,74 @@
+#include <ctype.h>
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-int main(int argc, char **argv)
-{
-  int chr;
-  int fd = dup(0);
+#include <yajl/yajl_common.h>
+#include <yajl/yajl_gen.h>
 
-  while (true)
+#define BUF_SIZE 4096
+
+char buf[BUF_SIZE];
+
+/* FD's */
+int in;
+int out;
+
+void (*handler)(int);
+
+void (*select_handler(char chr))(int)
+{
+  handler = NULL;
+
+  switch ((isdigit(chr) != 0) ? '0' : chr)
   {
-    chr = read(fd, &chr, 1);
-    switch (chr)
-    {
-      case 'd' : /* dictionary */
-/*        print_dict(fd);*/
-        break;
-      case 'i' : /* integer */
-        break;
-      case 'l' : /* list */
-        break;
-      case '1' :
-      case '2' :
-      case '3' :
-      case '4' :
-      case '5' :
-      case '6' :
-      case '7' :
-      case '8' :
-      case '9' : /* string */
-        break;
-      default:
-        fprintf(stderr, "Unknown marker: %u\n", chr);
-        break;
-    }
-    break;
+    case 'd' : /* dictionary */
+      break;
+    case 'e' : /* dictionary, integer, or list end */
+      break;
+    case 'i' : /* integer */
+      break;
+    case 'l' : /* list */
+      break;
+    case '0' : /* string */
+      break;
+    default:
+      fprintf(stderr, "Unknown marker: %u\n", chr);
+      break;
   }
 
-  exit(0);
+  return handler;
+}
+
+int
+main(int argc, char **argv)
+{
+  int chr = '\0';
+
+  in  = dup(0);
+  out = dup(1);
+
+  read(in, &chr, 1);
+  if (chr != 'd')
+  {
+    fprintf(stderr, "Malformed torrent file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  /* some work here */
+  while (true)
+  {
+    handler = select_handler(chr);
+
+    if (handler == NULL)
+      break;
+
+    handler(in);
+  }
+
+  exit(EXIT_SUCCESS);
 }
 
