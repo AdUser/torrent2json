@@ -4,14 +4,11 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
-#include <yajl/yajl_common.h>
 #include <yajl/yajl_gen.h>
 
-#define BUF_SIZE 4096
-
-char buf[BUF_SIZE];
 
 /* FD's */
 FILE *in;
