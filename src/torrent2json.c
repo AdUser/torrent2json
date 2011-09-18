@@ -117,21 +117,25 @@ void (*select_handler(int chr))(int)
   switch ((isdigit(chr) != 0) ? '0' : chr)
   {
     case 'd' : /* dictionary */
+      return get_dict;
       break;
     case 'e' : /* dictionary, integer, or list end */
       break;
     case 'i' : /* integer */
+      return get_integer;
       break;
     case 'l' : /* list */
+      return get_list;
       break;
     case '0' : /* string */
+      return get_string;
       break;
     default:
       fprintf(stderr, "Unknown marker: %u\n", chr);
       break;
   }
 
-  return handler;
+  return NULL;
 }
 
 int
