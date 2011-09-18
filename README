@@ -1,7 +1,26 @@
+== Overview ==
   Set of programs to convert binary encoded torrent files to human readable
 json and back.
   Acts as standart unix "filter" program: reads stdin, writes to stdout.
 
+== Requirements ==
+cmake - for building only, can be removed later
+yajl - yet another json library (http://lloyd.github.com/yajl/)
+
+== Compiling ==
+$ cmake .
+$ make
+# make install
+
+You may also do "out of tree" builds, like this:
+$ mkdir .build && cd .build
+$ cmake ..
+$ make
+# make install
+... and all changes: new files, object modules, Makefile's, and so on will
+be located in this dir.
+
+== Authors ==
 This utilites originally written by two peoples: michail and h4tr3d.
 If you want to contact them look there -> http://linuxdv.ru
 
