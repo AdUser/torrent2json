@@ -19,7 +19,7 @@ struct yajl_gen_t *gen = NULL;
 void (*select_handler(int))(int);
 
 void
-get_integer(char chr)
+get_integer(int chr)
 { /* 'chr' always 'i' in this case */
   int c = '\0';
   bool cont = true;
@@ -50,7 +50,7 @@ get_integer(char chr)
 }
 
 void
-get_string(char chr)
+get_string(int chr)
 {
   /* in this case 'chr' first digit of string lenght */
   unsigned int len = (unsigned char) chr - '0';
@@ -137,6 +137,7 @@ void (*select_handler(int chr))(int)
 int
 main(int argc, char **argv)
 {
+  void (*handler)(int) = NULL;
   int chr = '\0';
   const unsigned char *buf = NULL;
   size_t len = 0;
