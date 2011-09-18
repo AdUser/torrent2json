@@ -14,12 +14,12 @@
 char buf[BUF_SIZE];
 
 /* FD's */
-int in;
-int out;
+FILE *in;
+FILE *out;
 
-void (*handler)(int);
+void (*handler)(void);
 
-void (*select_handler(char chr))(int)
+void (*select_handler(char chr))(void)
 {
   handler = NULL;
 
@@ -48,25 +48,13 @@ main(int argc, char **argv)
 {
   int chr = '\0';
 
-  in  = dup(0);
-  out = dup(1);
+  in  = stdin;
+  out = stdout;
 
-  read(in, &chr, 1);
-  if (chr != 'd')
-  {
-    fprintf(stderr, "Malformed torrent file\n");
-    exit(EXIT_FAILURE);
-  }
-
-  /* some work here */
-  while (true)
+  while ((chr = fgetc(in)) != EOF);
   {
     handler = select_handler(chr);
-
-    if (handler == NULL)
-      break;
-
-    handler(in);
+    handler();
   }
 
   exit(EXIT_SUCCESS);
