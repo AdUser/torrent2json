@@ -1,14 +1,11 @@
 #include <ctype.h>
-#include <fcntl.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include <yajl/yajl_gen.h>
-
 
 /* FD's */
 FILE *in;
@@ -18,6 +15,7 @@ struct yajl_gen_t *gen = NULL;
 
 void (*select_handler(int))(int);
 
+/* handlers */
 void
 get_integer(int chr)
 { /* 'chr' always 'i' in this case */
@@ -65,7 +63,9 @@ get_string(int chr)
 
   if ((buf = malloc(sizeof(char) * len + 1)) == NULL)
   {
+#ifdef DEBUG
     fprintf(stderr, "Can't allocate memory, exiting.\n");
+#endif
     exit(EXIT_FAILURE);
   }
 
@@ -112,14 +112,13 @@ get_list(int chr)
   yajl_gen_array_close(gen);
 }
 
+/* general purpose functions */
 void (*select_handler(int chr))(int)
 {
   switch ((isdigit(chr) != 0) ? '0' : chr)
   {
     case 'd' : /* dictionary */
       return get_dict;
-      break;
-    case 'e' : /* dictionary, integer, or list end */
       break;
     case 'i' : /* integer */
       return get_integer;
@@ -131,7 +130,9 @@ void (*select_handler(int chr))(int)
       return get_string;
       break;
     default:
+#ifdef DEBUG
       fprintf(stderr, "Unknown marker: %u\n", chr);
+#endif
       break;
   }
 
@@ -146,12 +147,13 @@ main(int argc, char **argv)
   const unsigned char *buf = NULL;
   size_t len = 0;
 
-  in  = stdin;
-  out = stdout;
+  /* FILE */ in  = stdin;
+  /* FILE */ out = stdout;
 
   gen = yajl_gen_alloc(NULL);
+
   yajl_gen_config(gen, yajl_gen_beautify,         1);
-  yajl_gen_config(gen, yajl_gen_indent_string, "  ");
+  yajl_gen_config(gen, yajl_gen_indent_string, "\t");
 
   while ((c = fgetc(in)) != EOF)
   {
@@ -160,7 +162,7 @@ main(int argc, char **argv)
   }
 
   yajl_gen_get_buf(gen, &buf, &len);
-  if (len > 0) fprintf(out, "%s", buf);
+  if (len > 0 && buf) fprintf(out, "%s", buf);
   yajl_gen_free(gen);
 
   exit(EXIT_SUCCESS);
