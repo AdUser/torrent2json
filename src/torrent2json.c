@@ -16,8 +16,7 @@ FILE *out;
 
 struct yajl_gen_t *gen = NULL;
 
-/* object handler prototype */
-void (*handler)(char);
+void (*select_handler(int))(int);
 
 void
 get_integer(char chr)
@@ -79,10 +78,42 @@ get_string(char chr)
   free(buf);
 }
 
-void (*select_handler(char chr))(char)
-{
-  handler = NULL;
+void
+get_dict(int chr)
+{ /* 'chr' always 'd' in this case */
+  void (*handler)(int) = NULL;
+  int c = '\0';
 
+  yajl_gen_map_open(gen);
+
+  while ((c = fgetc(in)) != 'e')
+  {
+    handler = select_handler(c);
+    if (handler) handler(c);
+  }
+
+  yajl_gen_map_close(gen);
+}
+
+void
+get_list(int chr)
+{ /* 'chr' always 'l' in this case */
+  void (*handler)(int) = NULL;
+  int c = '\0';
+
+  yajl_gen_array_open(gen);
+
+  while ((c = fgetc(in)) != 'e')
+  {
+    handler = select_handler(c);
+    if (handler) handler(c);
+  }
+
+  yajl_gen_array_close(gen);
+}
+
+void (*select_handler(int chr))(int)
+{
   switch ((isdigit(chr) != 0) ? '0' : chr)
   {
     case 'd' : /* dictionary */
