@@ -70,7 +70,7 @@ get_string(int chr)
   }
 
   memset(buf, '\0', len + 1);
-  for (i = 0; i <= len; i++)
+  for (i = 0; i < len; i++)
     *(buf + i * sizeof(char)) = fgetc(in);
 
   yajl_gen_string(gen, buf, len);
@@ -142,7 +142,7 @@ int
 main(int argc, char **argv)
 {
   void (*handler)(int) = NULL;
-  int chr = '\0';
+  int c = '\0';
   const unsigned char *buf = NULL;
   size_t len = 0;
 
@@ -153,14 +153,14 @@ main(int argc, char **argv)
   yajl_gen_config(gen, yajl_gen_beautify,         1);
   yajl_gen_config(gen, yajl_gen_indent_string, "  ");
 
-  while ((chr = fgetc(in)) != EOF);
+  while ((c = fgetc(in)) != EOF)
   {
-    handler = select_handler(chr);
-    handler(chr);
+    handler = select_handler(c);
+    if (handler) handler(c);
   }
 
   yajl_gen_get_buf(gen, &buf, &len);
-  fprintf(out, "%s", buf);
+  if (len > 0) fprintf(out, "%s", buf);
   yajl_gen_free(gen);
 
   exit(EXIT_SUCCESS);
