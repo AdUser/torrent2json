@@ -53,7 +53,7 @@ get_string(int chr)
   /* in this case 'chr' first digit of string lenght */
   unsigned int len = (unsigned char) chr - '0';
   int c = '\0';
-  int i = 0;
+  unsigned int i = 0;
   unsigned char *buf = NULL;
 
   /* first, get string lenght */
