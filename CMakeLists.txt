@@ -11,7 +11,7 @@ INCLUDE(CheckFunctionExists)
 
 IF    (NOT CMAKE_BUILD_TYPE)
   SET (CMAKE_BUILD_TYPE Debug)
-  SET (CMAKE_C_FLAGS "-ggdb -O0 -Wall -pedantic -DDEBUG")
+  SET (CMAKE_C_FLAGS "-ggdb -O0 -Wall -pedantic -DDEBUG -std=c99")
 ENDIF (NOT CMAKE_BUILD_TYPE)
 
 # set paths
