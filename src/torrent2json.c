@@ -63,9 +63,7 @@ get_string(int chr)
 
   if ((buf = malloc(sizeof(char) * len + 1)) == NULL)
   {
-#ifdef DEBUG
     fprintf(stderr, "Can't allocate memory, exiting.\n");
-#endif
     exit(EXIT_FAILURE);
   }
 
@@ -130,9 +128,7 @@ void (*select_handler(int chr))(int)
       return get_string;
       break;
     default:
-#ifdef DEBUG
       fprintf(stderr, "Unknown marker: %u\n", chr);
-#endif
       break;
   }
 
