@@ -38,8 +38,11 @@ get_integer(int chr)
       value *= -1;
         break;
       case 'e' : /* integer end marker */
-      default  : /* or garbled data    */
         cont = false;
+        break;
+      default  : /* or garbled data    */
+        fprintf(stderr, "Garbage after integer: %i%c<\n", value, c);
+        exit(EXIT_FAILURE);
         break;
     }
   }
