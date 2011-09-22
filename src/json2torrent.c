@@ -54,6 +54,19 @@ yajl_callbacks callbacks = {
   write_end         /* end array   */
 };
 
+void
+check_yajl_error(struct yajl_handle_t *handle, unsigned char *buf, size_t read)
+{
+  unsigned char *yajl_error = NULL;
+
+  if ((yajl_error = yajl_get_error(handle, 1, buf, read)) != NULL)
+  {
+    fwrite(buf, read, 1, stderr);
+    fputc('\n', stderr);
+    yajl_free_error(handle, yajl_error);
+  }
+}
+
 int
 main(int argc, char **argv)
 {
