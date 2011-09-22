@@ -50,7 +50,7 @@ yajl_callbacks callbacks = {
   NULL,             /* number  */
   write_string,     /* string  */
   write_dict_start, /* start map   */
-  NULL,             /* map key     */
+  write_string,     /* map key     */
   write_end,        /* end map     */
   write_list_start, /* start array */
   write_end         /* end array   */
