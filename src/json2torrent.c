@@ -15,6 +15,8 @@ FILE *out;
 struct yajl_handle_t *handle = NULL;
 struct yajl_gen_t *gen = NULL;
 
+#define BUF_SIZE (64 * 1024)
+
 static int
 write_integer(void *ctx, long long l)
 {
@@ -70,6 +72,8 @@ check_yajl_error(struct yajl_handle_t *handle, unsigned char *buf, size_t read)
 int
 main(int argc, char **argv)
 {
+  static unsigned char buf[BUF_SIZE];
+  size_t read = 0;
   /* FILE */ in  = stdin;
   /* FILE */ out = stdout;
 
@@ -81,7 +85,19 @@ main(int argc, char **argv)
   yajl_config(handle, yajl_allow_comments,        1);
   yajl_config(handle, yajl_dont_validate_strings, 1);
 
-  /* some work here */
+  while ((read = fread(buf, 1, (BUF_SIZE - 1), in)) != 0)
+  {
+    buf[read] = '\0';
+
+    if (yajl_parse(handle, buf, read) != yajl_status_ok)
+    {
+      check_yajl_error(handle, buf, read);
+      break;
+    }
+  }
+
+  if (yajl_complete_parse(handle) != yajl_status_ok)
+    check_yajl_error(handle, buf, read);
 
   yajl_free(handle);
 
