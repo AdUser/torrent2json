@@ -19,10 +19,7 @@ struct yajl_gen_t *gen = NULL;
 
 static int
 write_integer(void *ctx, long long l)
-{
-  fprintf(out, "i%llie", l);
-  return 1;
-}
+{ return (fprintf(out, "i%llie", l) > 0 ? 1 : 0); }
 
 static int
 write_dict_start(void *ctx)
