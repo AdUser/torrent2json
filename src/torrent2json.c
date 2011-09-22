@@ -21,12 +21,11 @@ get_integer(int chr)
 { /* 'chr' always 'i' in this case */
   int c = '\0';
   bool cont = true;
+  bool negative = false;
   long int value = 0; /* signed */
 
   while (cont)
   {
-    if (!cont) break;
-
     c = fgetc(in);
     switch ((isdigit(c) != 0) ? '0' : c) /* little hack here */
     {
@@ -34,19 +33,23 @@ get_integer(int chr)
         value *= 10; /* (0 * 10) -> 0, so it works correct */
         value += c - '0';
         break;
-      case '-' :
-      value *= -1;
-        break;
       case 'e' : /* integer end marker */
         cont = false;
         break;
-      default  : /* or garbled data    */
+      case '-' :
+        if (value == 0) /* true if '-' - first char after 'i' */
+        {
+          negative = true;
+          break;
+        } /* else we consider it as garbage  */
+      default  :
         fprintf(stderr, "Garbage after integer: %i%c<\n", value, c);
         exit(EXIT_FAILURE);
         break;
     }
   }
 
+  if (negative) value *= -1;
   yajl_gen_integer(gen, value);
 }
 
