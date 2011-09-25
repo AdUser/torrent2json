@@ -67,15 +67,15 @@ get_string(int chr)
     len *= 10, len += c - '0';
   /* 'c' now should contain ':' */
 
-  if ((buf = malloc(sizeof(char) * len + 1)) == NULL)
+  if ((buf = malloc(sizeof(char) * (len + 1))) == NULL)
   {
     fprintf(stderr, "Can't allocate memory, exiting.\n");
     exit(EXIT_FAILURE);
   }
 
-  memset(buf, '\0', len + 1);
+  memset(buf, '\0', sizeof(char) * (len + 1));
   for (i = 0; i < len; i++)
-    *(buf + i * sizeof(char)) = fgetc(in);
+    buf[i] = fgetc(in);
 
   yajl_gen_string(gen, buf, len);
 
