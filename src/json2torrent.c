@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <yajl/yajl_gen.h>
 #include <yajl/yajl_parse.h>
@@ -82,6 +83,7 @@ int
 main(int argc, char **argv)
 {
   static unsigned char buf[BUF_SIZE];
+  char opt = '\0';
   size_t read = 0;
   /* FILE */ in  = stdin;
   /* FILE */ out = stdout;
@@ -99,6 +101,31 @@ main(int argc, char **argv)
     fprintf(stderr, "Can't allocate json parser. Exiting.");
     exit(EXIT_FAILURE);
   }
+
+  while ((opt = getopt(argc, argv, "hi:o:")) != -1)
+    switch (opt)
+    {
+      case 'h' :
+        usage(EXIT_SUCCESS);
+        break;
+      case 'i' :
+        if ((in = fopen(optarg, "r")) == NULL)
+        {
+          fprintf(stderr, "Can't open input file '%s'. Exiting.", optarg);
+          exit(EXIT_FAILURE);
+        }
+        break;
+      case 'o' :
+        if ((out = fopen(optarg, "w")) == NULL)
+        {
+          fprintf(stderr, "Can't open output file '%s'. Exiting.", optarg);
+          exit(EXIT_FAILURE);
+        }
+        break;
+      default  :
+        usage(EXIT_FAILURE);
+        break;
+    }
 
   yajl_config(handle, yajl_allow_comments,        1);
   yajl_config(handle, yajl_dont_validate_strings, 1);
