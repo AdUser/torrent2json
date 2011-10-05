@@ -24,7 +24,7 @@ ENDIF (NOT LIBDIR)
 
 SET(REQUIRED_HEADERS
     "ctype.h" "stdbool.h" "stdio.h"
-    "stdint.h" "stdlib.h" "string.h")
+    "stdint.h" "stdlib.h" "string.h" "unistd.h")
 
 FOREACH   (HDR ${REQUIRED_HEADERS})
   CHECK_INCLUDE_FILE (${HDR}  TEST_H)
