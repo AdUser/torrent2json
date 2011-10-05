@@ -74,10 +74,19 @@ main(int argc, char **argv)
   /* FILE */ in  = stdin;
   /* FILE */ out = stdout;
 
-  gen = yajl_gen_alloc(NULL);
+  if ((gen = yajl_gen_alloc(NULL)) == NULL)
+  {
+    fprintf(stderr, "Can't allocate json generator. Exiting.");
+    exit(EXIT_FAILURE);
+  }
+
   yajl_gen_config(gen, yajl_gen_validate_utf8, 0);
 
-  handle = yajl_alloc(&callbacks, NULL, (void *) gen);
+  if ((handle = yajl_alloc(&callbacks, NULL, (void *) gen)) == NULL)
+  {
+    fprintf(stderr, "Can't allocate json parser. Exiting.");
+    exit(EXIT_FAILURE);
+  }
 
   yajl_config(handle, yajl_allow_comments,        1);
   yajl_config(handle, yajl_dont_validate_strings, 1);
