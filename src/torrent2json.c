@@ -165,7 +165,11 @@ main(int argc, char **argv)
   /* FILE */ in  = stdin;
   /* FILE */ out = stdout;
 
-  gen = yajl_gen_alloc(NULL);
+  if ((gen = yajl_gen_alloc(NULL)) == NULL)
+  {
+    fprintf(stderr, "Can't allocate json generator. Exiting.");
+    exit(EXIT_FAILURE);
+  }
 
   yajl_gen_config(gen, yajl_gen_beautify,         1);
   yajl_gen_config(gen, yajl_gen_indent_string, "\t");
