@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <yajl/yajl_gen.h>
 
@@ -160,6 +161,7 @@ main(int argc, char **argv)
   void (*handler)(int) = NULL;
   int c = '\0';
   const unsigned char *buf = NULL;
+  char opt = '\0';
   size_t len = 0;
 
   /* FILE */ in  = stdin;
@@ -173,6 +175,34 @@ main(int argc, char **argv)
 
   yajl_gen_config(gen, yajl_gen_beautify,         1);
   yajl_gen_config(gen, yajl_gen_indent_string, "\t");
+
+  while ((opt = getopt(argc, argv, "hi:o:c")) != -1)
+    switch (opt)
+    {
+      case 'h' :
+        usage(EXIT_SUCCESS);
+        break;
+      case 'i' :
+        if ((in = fopen(optarg, "r")) == NULL)
+        {
+          fprintf(stderr, "Can't open input file '%s'. Exiting.", optarg);
+          exit(EXIT_FAILURE);
+        }
+        break;
+      case 'o' :
+        if ((out = fopen(optarg, "w")) == NULL)
+        {
+          fprintf(stderr, "Can't open output file '%s'. Exiting.", optarg);
+          exit(EXIT_FAILURE);
+        }
+        break;
+      case 'c' :
+        yajl_gen_config(gen, yajl_gen_beautify,       0);
+        break;
+      default  :
+        usage(EXIT_FAILURE);
+        break;
+    }
 
   while ((c = fgetc(in)) != EOF)
   {
