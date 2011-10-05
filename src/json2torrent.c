@@ -17,6 +17,18 @@ struct yajl_gen_t *gen = NULL;
 
 #define BUF_SIZE (64 * 1024)
 
+void
+usage(int exitcode)
+{
+  fprintf(stderr, "\
+Usage: json2torrent [<options>]\n\
+Where options are:\n\
+  -h            This help.\n\
+  -i <file>     Input file.   (Default: read from stdin)\n\
+  -o <file>     Output file.  (Default: write to stdout)\n");
+  exit(exitcode);
+}
+
 static int
 write_integer(void *ctx, long long l)
 { return (fprintf(out, "i%llie", l) > 0 ? 1 : 0); }
