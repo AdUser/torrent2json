@@ -20,7 +20,10 @@ $ make
 ... and all changes: new files, object modules, Makefile's, and so on will
 be located in this dir.
 
+For build with debugging information add the following to cmake options:
+"-DCMAKE_BUILD_TYPE=Debug"
+
 == Authors ==
 This utilites originally written by two peoples: michail and h4tr3d.
-If you want to contact them look there -> http://linuxdv.ru
+If you want to contact them, look there -> http://linuxdv.ru
 
