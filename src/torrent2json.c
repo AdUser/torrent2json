@@ -15,6 +15,19 @@ struct yajl_gen_t *gen = NULL;
 
 void (*select_handler(int))(int);
 
+void
+usage(int exitcode)
+{
+  fprintf(stderr, "\
+Usage: torrent2json [<options>]\n\
+Where options are:\n\
+  -h            This help.\n\
+  -i <file>     Input file.   (Default: read from stdin)\n\
+  -o <file>     Output file.  (Default: write to stdout)\n\
+  -c            Compact json. (Default: no)\n");
+  exit(exitcode);
+}
+
 /* handlers */
 void
 get_integer(int chr)
