@@ -29,6 +29,34 @@ Where options are:\n\
   exit(exitcode);
 }
 
+void
+hexencode(unsigned char *buf, unsigned int len) {
+  unsigned char *encbuf = NULL;
+  unsigned int   enclen = sizeof(char) * (len * 3 + 3); /* "hex" + "FF," x len */
+  unsigned int i, j;
+  unsigned int a, b;
+
+  if ((encbuf = malloc(enclen)) == NULL) {
+    fprintf(stderr, "Can't allocate memory, exiting.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  memcpy(encbuf, "hex", 3);
+
+  for (i = 0, j = 3; i < len; i++, j += 3) {
+    a = (buf[i] & 0xF0) >> 4;
+    b = (buf[i] & 0x0F) >> 0;
+    encbuf[j + 0] = ',';
+    encbuf[j + 1] = (a > 9) ? 'A' + (a - 10) : '0' + a;
+    encbuf[j + 2] = (b > 9) ? 'A' + (b - 10) : '0' + b;
+  }
+
+  encbuf[3] = ':';
+  yajl_gen_string(gen, encbuf, enclen);
+
+  free(encbuf);
+}
+
 /* handlers */
 void
 get_integer(int chr)
@@ -75,6 +103,7 @@ get_string(int chr)
   int c = '\0';
   unsigned int i = 0;
   unsigned char *buf = NULL;
+  unsigned int hex = 0;
 
   /* first, get string lenght */
   while (isdigit((c = fgetc(in))))
@@ -88,10 +117,17 @@ get_string(int chr)
   }
 
   memset(buf, '\0', sizeof(char) * (len + 1));
-  for (i = 0; i < len; i++)
+  for (i = 0; i < len; i++) {
     buf[i] = fgetc(in);
+    if (buf[i] < 0x20) /* string has control chars */
+      hex = 1;
+  }
 
-  yajl_gen_string(gen, buf, len);
+  if (hex == 1) {
+    hexencode(buf, len);
+  } else {
+    yajl_gen_string(gen, buf, len);
+  }
 
   free(buf);
 }
