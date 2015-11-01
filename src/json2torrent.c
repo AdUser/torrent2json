@@ -39,10 +39,6 @@ write_dict_start(void *ctx)
 { return fputc('d', out); }
 
 static int
-write_string(void *ctx, const unsigned char *str, size_t len)
-{ return (!!fprintf(out, "%u:", len) && !!fwrite(str, 1, len, out)); }
-
-static int
 write_list_start(void *ctx)
 { return fputc('l', out); }
 
@@ -51,6 +47,28 @@ write_list_start(void *ctx)
 static int
 write_end(void *ctx)
 { return fputc('e', out); return 0; }
+
+static int
+write_hexstring(void *ctx, const unsigned char *str, size_t len)
+{
+  unsigned int a, b, i;
+
+  fprintf(out, "%u:", (len - 3) / 3);
+  for (i = 3; i < len; i += 3) {
+    a = (str[i + 1] >= 'A' ? (str[i + 1] - 'A') + 10 : str[i + 1] - '0');
+    b = (str[i + 2] >= 'A' ? (str[i + 2] - 'A') + 10 : str[i + 2] - '0');
+    fprintf(out, "%c", (a << 4 | b));
+  }
+}
+
+static int
+write_string(void *ctx, const unsigned char *str, size_t len)
+{
+  if (len < 4 || strncmp(str, "hex:", 4) != 0)
+    return (!!fprintf(out, "%u:", len) && !!fwrite(str, 1, len, out));
+
+  return write_hexstring(ctx, str, len);
+}
 
 yajl_callbacks callbacks = {
   NULL,             /* null    */
